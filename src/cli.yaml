@@ -1,0 +1,15 @@
+name: The Resistance Game Solver
+version: "0.0.1"
+author: Shaun Karran <shaun.karran@gmail.com>
+about: Record events of a game of The Resistance and determine the spys.
+args:
+    - num-players:
+        short: n
+        long: num-players
+        help: The number of players in the game
+        takes_value: true
+        required: true
+    - verbose:
+        short: v
+        multiple: true
+        help: Sets the level of verbosity

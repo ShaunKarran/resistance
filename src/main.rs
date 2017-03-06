@@ -88,13 +88,17 @@ fn main() {
             }
 
             // Record the votes of all the players.
-            let vote_result = "Record the votes."
+            let vote_result = "Record the votes.";
             // If the vote fails, go back to recording the player names.
-            vote_fails = parse_vote(vote_result);
+            vote_fails = parse_vote(); // parse_vote(vote_result);
         }
 
         // Record the number of fail cards from the mission.
 
         // TODO last: Do fancy calculation to work out probability of spies.
     }
+}
+
+fn parse_vote() -> bool {
+    return false;
 }

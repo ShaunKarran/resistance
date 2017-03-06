@@ -53,10 +53,48 @@ fn main() {
 
     // TODO: Bonus cards. (Commander, Assassin, etc.)
 
-    let number_of_spies = (num_players as f32 / 3.0).ceil() as u32;
-    let number_of_resistance = num_players - number_of_spies;
+    let num_spies = (num_players as f32 / 3.0).ceil() as u32;
+    let num_resistance = num_players - num_spies;
 
-    println!("\nThere is {} resistance and {} spies.", number_of_resistance, number_of_spies);
+    println!("\nThere is {} resistance and {} spies.", num_resistance, num_spies);
 
     // TODO: Handle each round.
+
+    // -------- Game Rounds --------
+    for round_number in 1..6 {
+        println!("\nStarting round {}.", round_number);
+
+        let mut vote_fails = true;
+        let mut num_fails = 0;
+        while vote_fails { // IDEA: Instead of this while loop, use for loop with number of fails, break if vote passes.
+            num_fails += 1;
+            if num_fails > 5 { // TODO: Should this be 5 or 6?
+                // Go to next round.
+            }
+
+            // Record the names of the players going on the mission.
+            let num_players_on_mission = 2; // TODO: This will come from the round information.
+            let mut players_on_mission = Vec::new();
+            for x in 0..num_players_on_mission {
+                print!("\nEnter the name of a player going on the mission: ");
+                io::stdout().flush() // This is needed because print! is line buffered.
+                    .unwrap();
+
+                let mut player_name = String::new();
+                io::stdin().read_line(&mut player_name)
+                    .expect("Failed to read line");
+
+                players_on_mission.push(player_name);
+            }
+
+            // Record the votes of all the players.
+            let vote_result = "Record the votes."
+            // If the vote fails, go back to recording the player names.
+            vote_fails = parse_vote(vote_result);
+        }
+
+        // Record the number of fail cards from the mission.
+
+        // TODO last: Do fancy calculation to work out probability of spies.
+    }
 }

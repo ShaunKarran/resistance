@@ -4,7 +4,8 @@ version = "0.1.0"
 authors = ["Shaun Karran <shaun.karran@gmail.com>"]
 
 [dependencies]
-# serde = "0.9"
+serde = "0.9"
+serde_derive = "0.9"
 # serde_yaml = "0.6"
 
 [dependencies.clap]

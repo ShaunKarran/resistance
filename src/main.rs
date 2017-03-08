@@ -1,5 +1,7 @@
 #[macro_use]
 extern crate clap;
+#[macro_use]
+extern crate serde_derive;
 // extern crate serde_yaml;
 
 use std::collections::HashMap;
@@ -7,6 +9,30 @@ use std::fs::File;
 use std::io::{self, Read, Write};
 
 use clap::App;
+
+#[derive(Debug, Serialize, Deserialize)]
+struct RoundData {
+    attempts: Vec<AttemptData>,
+    mission_success: bool,
+}
+
+impl RoundData {
+    fn new() -> RoundData {
+        RoundData { attempts: Vec::new(), mission_success: false }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct AttemptData {
+    players_on_mission: Vec<String>,
+    votes: HashMap<String, bool>,
+}
+
+impl AttemptData {
+    fn new() -> AttemptData {
+        AttemptData { players_on_mission: Vec::new(), votes: HashMap::new() }
+    }
+}
 
 fn main() {
     let yaml = load_yaml!("cli.yaml"); // NOTE: Currently clap yaml feature is incompatible with serde_yaml.
@@ -32,73 +58,79 @@ fn main() {
     // -------- Game Setup --------
     println!("Welcome to The Resistance game solver.");
 
-    // TODO: Figure out what needs to be stored about a player, and change the data type to suit.
-    let mut players = HashMap::new();
+    let mut players = Vec::new();
     for x in 1..(num_players + 1) {
         print!("\nEnter the name of player {}: ", x);
         io::stdout().flush() // This is needed because print! is line buffered.
             .unwrap();
 
-        let mut player_name = String::new();
-        io::stdin().read_line(&mut player_name)
+        let mut input = String::new();
+        io::stdin().read_line(&mut input)
             .expect("Failed to read line");
+        let player_name = input.trim().to_string();
 
-        players.insert(player_name, x);
+        players.push(player_name);
     }
-    // Debugging stuff.
-    // println!("The players are");
-    // for (name, number) in players.iter() {
-    //     println!("Player {}: {}", number, name);
-    // }
 
     // TODO: Bonus cards. (Commander, Assassin, etc.)
 
     let num_spies = (num_players as f32 / 3.0).ceil() as u32;
     let num_resistance = num_players - num_spies;
 
-    println!("\nThere is {} resistance and {} spies.", num_resistance, num_spies);
+    println!("\nThere is {} resistance members and {} spies.", num_resistance, num_spies);
 
-    // TODO: Handle each round.
+    // Object to store all the data recorded during the game.
+    let mut game_data: Vec<RoundData> = Vec::new();
 
     // -------- Game Rounds --------
-    for round_number in 1..6 {
+    'round: for round_number in 1..6 {
         println!("\nStarting round {}.", round_number);
 
-        let mut vote_fails = true;
-        let mut num_fails = 0;
-        while vote_fails { // IDEA: Instead of this while loop, use for loop with number of fails, break if vote passes.
-            num_fails += 1;
-            if num_fails > 5 { // TODO: Should this be 5 or 6?
-                // Go to next round.
-            }
+        let mut round_data = RoundData::new();
+        let num_players_on_mission = 2; // TODO: This will come from the round information.
+
+        'attempt: for mission_attempt in 0..6 {
+            let mut attempt_data = AttemptData::new();
 
             // Record the names of the players going on the mission.
-            let num_players_on_mission = 2; // TODO: This will come from the round information.
-            let mut players_on_mission = Vec::new();
+            // let mut players_on_mission = Vec::new();
             for x in 0..num_players_on_mission {
                 print!("\nEnter the name of a player going on the mission: ");
                 io::stdout().flush() // This is needed because print! is line buffered.
                     .unwrap();
 
-                let mut player_name = String::new();
-                io::stdin().read_line(&mut player_name)
+                let mut input = String::new();
+                io::stdin().read_line(&mut input)
                     .expect("Failed to read line");
+                let player_name = input.trim().to_string(); // Trim the new line.
 
-                players_on_mission.push(player_name);
+                attempt_data.players_on_mission.push(player_name);
             }
 
             // Record the votes of all the players.
             let vote_result = "Record the votes.";
-            // If the vote fails, go back to recording the player names.
-            vote_fails = parse_vote(); // parse_vote(vote_result);
+            attempt_data.votes.insert("test".to_string(), true);
+
+            round_data.attempts.push(attempt_data);
+
+            // If the vote passes dont attempt mission again.
+            if vote_passed() { // vote_passed(vote_result, num_players);
+                println!("Players go on the mission.");
+                // Record the number of fail cards from the mission.
+                // TODO last: Do fancy calculation to work out probability of spies.
+
+                round_data.mission_success = true;
+                println!("{:?}", round_data);
+                game_data.push(round_data);
+                continue 'round; // Break to the start of the outer loop.
+            }
         }
 
-        // Record the number of fail cards from the mission.
-
-        // TODO last: Do fancy calculation to work out probability of spies.
+        // If it gets to here, too many missions failed, spys win the round.
+        println!("Too many failed attempts. Spies win.");
     }
 }
 
-fn parse_vote() -> bool {
-    return false;
+fn vote_passed() -> bool {
+    return true;
 }

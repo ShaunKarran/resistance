@@ -1,0 +1,36 @@
+# HashMap<String, HashMap<String, HashMap<String, HashMap<String, bool>>>>
+round_1:
+    attempt_1:
+        on_mission: [shaun, nathan]
+        shaun:
+            vote: false
+        nathan:
+            vote: true
+        gavin:
+            vote: false
+    attempt_2:
+        on_mission: [shaun, gavin]
+        shaun:
+            vote: true
+        nathan:
+            vote: false
+        gavin:
+            vote: true
+    mission_success: false
+
+round_2:
+    attempt_1:
+        on_mission: [shaun, nathan]
+        votes:
+            shaun: false
+            nathan: true
+            gavin: false
+    attempt_2:
+        on_mission: [shaun, gavin]
+        shaun:
+            vote: true
+        nathan:
+            vote: false
+        gavin:
+            vote: true
+    mission_success: false

@@ -34,6 +34,27 @@ impl AttemptData {
     }
 }
 
+const NUM_MISSIONS: u32 = 5;
+
+// The inner arrays start with 4 0's because they are indexed on the number of players in the game, min 5.
+// Example of usage: num_players_on_mission = round_info[mission_number][num_players_in_game]
+const NUM_PLAYERS_PER_MISSION: [[u32; 10]; NUM_MISSIONS] = [
+    /* Mission 1 */ [0, 0, 0, 0, 2, 2, 2, 3, 3, 3],
+    /* Mission 2 */ [0, 0, 0, 0, 3, 3, 3, 4, 4, 4],
+    /* Mission 3 */ [0, 0, 0, 0, 2, 4, 3, 4, 4, 4],
+    /* Mission 4 */ [0, 0, 0, 0, 3, 3, 4, 5, 5, 5],
+    /* Mission 5 */ [0, 0, 0, 0, 3, 4, 4, 5, 5, 5],
+];
+
+// The number of fails required for the spys to win a given mission.
+const NUM_FALS_PER_MISSION: [[u32; 10]; NUM_MISSIONS] = [
+    /* Mission 1 */ [0, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+    /* Mission 2 */ [0, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+    /* Mission 3 */ [0, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+    /* Mission 4 */ [0, 0, 0, 0, 1, 1, 2, 2, 2, 2],
+    /* Mission 5 */ [0, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+];
+
 fn main() {
     let yaml = load_yaml!("cli.yaml"); // NOTE: Currently clap yaml feature is incompatible with serde_yaml.
     let matches = App::from_yaml(yaml).get_matches();
@@ -52,8 +73,8 @@ fn main() {
 
     // let round_information: HashMap<u32, HashMap<u32, HashMap<String, u32>>> = serde_yaml::from_str(&data).unwrap();
     // Debugging stuff
-    // let round_number = 1;
-    // println!("{}", round_information[&num_players][&round_number][&"num_on_mission".to_string()]);
+    // let mission_number = 1;
+    // println!("{}", round_information[&num_players][&mission_number][&"num_on_mission".to_string()]);
 
     // -------- Game Setup --------
     println!("Welcome to The Resistance game solver.");
@@ -83,8 +104,8 @@ fn main() {
     let mut game_data: Vec<RoundData> = Vec::new();
 
     // -------- Game Rounds --------
-    'round: for round_number in 1..6 {
-        println!("\nStarting round {}.", round_number);
+    'mission: for mission_number in 0..NUM_MISSIONS {
+        println!("\nStarting mission {}.", mission_number + 1); // + 1 so that it begins at 1.
 
         let mut round_data = RoundData::new();
         let num_players_on_mission = 2; // TODO: This will come from the round information.
@@ -122,7 +143,7 @@ fn main() {
                 round_data.mission_success = true;
                 println!("{:?}", round_data);
                 game_data.push(round_data);
-                continue 'round; // Break to the start of the outer loop.
+                continue 'mission; // Break to the start of the outer loop.
             }
         }
 

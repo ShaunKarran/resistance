@@ -1,14 +1,14 @@
-round_2:
-    attempt_1:
-        on_mission: [shaun, nathan]
-        votes:
-            shaun: false
-            nathan: true
-            gavin: false
-    attempt_2:
-        on_mission: [shaun, gavin]
-        votes:
-            shaun: true
-            nathan: true
-            gavin: false
-    mission_success: false
+mission_1:
+    attempts:
+        - on_mission: [shaun, nathan]
+          votes:
+              shaun: false
+              nathan: true
+              gavin: false
+        - on_mission: [shaun, gavin]
+          votes:
+              shaun: true
+              nathan: true
+              gavin: false
+    fail_count: 1
+    success: false

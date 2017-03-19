@@ -66,6 +66,7 @@ fn main() {
     // -------- Game Setup --------
     println!("Welcome to The Resistance game solver.");
 
+    // Record the names of the players in the game.
     let mut player_names = Vec::new();
     for x in 0..num_players {
         print!("\nEnter the name of player {}: ", x + 1); // + 1 so that it begins at 1.
@@ -81,9 +82,9 @@ fn main() {
 
     // TODO: Bonus cards. (Commander, Assassin, etc.)
 
+    // Calculate team sizes.
     let num_spies = (num_players as f32 / 3.0).ceil() as u32;
     let num_resistance = num_players - num_spies;
-
     println!("\nThere is {} resistance members and {} spies.", num_resistance, num_spies);
 
     // Object to store the data recorded during the game.
@@ -142,7 +143,7 @@ fn main() {
 
             round_data.attempts.push(attempt_data);
 
-            if vote_passed(&round_data.attempts.last().unwrap().votes, num_players) {
+            if vote_passed(&round_data.attempts.last().unwrap().votes) {
                 println!("Players go on the mission.");
                 // Record the number of fail cards from the mission.
                 // TODO last: Do fancy calculation to work out probability of spies.
@@ -162,8 +163,11 @@ fn main() {
     }
 }
 
-fn vote_passed(votes: &HashMap<String, bool>, num_players: u32) -> bool {
+// TODO: How to write proper docstring.
+/// Returns true if more than half the votes are yes, otherwise false.
+fn vote_passed(votes: &HashMap<String, bool>) -> bool {
     let mut num_accepts = 0;
+    let num_players = votes.len();
 
     for (_, vote) in votes.iter() {
         if *vote {
